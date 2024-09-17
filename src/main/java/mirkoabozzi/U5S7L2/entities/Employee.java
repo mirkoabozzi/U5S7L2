@@ -1,5 +1,6 @@
 package mirkoabozzi.U5S7L2.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,6 +20,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonIgnoreProperties({"password", "role", "authorities", "enabled", "accountNonLocked", "credentialsNonExpired", "accountNonExpired"})
+//
 public class Employee implements UserDetails {
     @Id
     @GeneratedValue

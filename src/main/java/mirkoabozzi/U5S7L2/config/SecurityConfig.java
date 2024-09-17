@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -21,5 +23,10 @@ public class SecurityConfig {
         httpSecurity.sessionManagement(http -> http.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); //disabilita le sessioni
         httpSecurity.authorizeHttpRequests(http -> http.requestMatchers("/**").permitAll()); //senza questo otterrò 401 a ogni richiesta
         return httpSecurity.build();
+    }
+
+    @Bean
+    PasswordEncoder getBCrypt() {
+        return new BCryptPasswordEncoder(11); // questo è un bean che mi consente di cryptare le password
     }
 }

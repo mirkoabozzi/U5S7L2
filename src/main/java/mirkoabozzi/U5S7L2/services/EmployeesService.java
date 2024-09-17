@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,12 +30,14 @@ public class EmployeesService {
     private Cloudinary cloudinary;
     @Autowired
     private JavaMailSenderImpl javaMailSender;
+    @Autowired
+    private PasswordEncoder passwordEncoder; // importo il password encoder bcrypt che utilizzerò nel metodo save per cryptare le password
 
     //POST
     public Employee save(EmployeesDTO payload) {
         if (employeesRepository.existsByEmail(payload.email()))
             throw new BadRequestException("Email " + payload.email() + " already on DB");
-        Employee newEmployee = new Employee(payload.username(), payload.name(), payload.surname(), payload.email(), "https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname(), payload.password());
+        Employee newEmployee = new Employee(payload.username(), payload.name(), payload.surname(), payload.email(), "https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname(), this.passwordEncoder.encode(payload.password()));
 
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setFrom(javaMailSender.getUsername());
