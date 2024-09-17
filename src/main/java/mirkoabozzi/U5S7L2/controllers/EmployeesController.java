@@ -81,11 +81,11 @@ public class EmployeesController {
         return this.employeesService.update(employeeAuthenticated.getId(), payload);
     }
 
-//    //POST ME IMG
-//    @PostMapping("/me/avatar/{id}")
-//    public void imgUploadME(@RequestParam("avatar") MultipartFile img, @PathVariable UUID id) throws IOException, MaxUploadSizeExceededException {
-//        this.employeesService.imgUpload(img, id);
-//    }
+    //POST ME IMG
+    @PostMapping("/me/avatar")
+    public void imgUploadME(@RequestParam("avatar") MultipartFile img, @AuthenticationPrincipal Employee employeeAuthenticated) throws IOException, MaxUploadSizeExceededException {
+        this.employeesService.imgUpload(img, employeeAuthenticated.getId());
+    }
 
     //DELETE ELIMINA MIO PROFILO
     @DeleteMapping("/me")

@@ -19,7 +19,7 @@ public class AuthenticationService {
 
     public String checkCredentialAndCreateToken(EmployeeLoginDTO payload) {
         Employee found = this.employeesService.findByEmail(payload.email());  //cerco il dipendente tramite email
-        if (passwordEncoder.matches(payload.password(), found.getPassword())) { // controllo se la password inserita corrisponde a quella presente nel DB
+        if (passwordEncoder.matches(payload.password(), found.getPassword())) { // controllo se la password inserita corrisponde a quella presente nel DB, utilizzo il password encoder per la codifica
             return this.jwtTools.generateToken(found); // tramite il metodo dei JWTTools genero un nuovo token
         } else {
             throw new UnauthorizedException("Incorrect credentials");  // se non passo le condizioni lancio un'eccezione
