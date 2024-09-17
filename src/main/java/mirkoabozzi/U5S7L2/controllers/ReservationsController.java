@@ -2,6 +2,7 @@ package mirkoabozzi.U5S7L2.controllers;
 
 import mirkoabozzi.U5S7L2.dto.ReservationsDTO;
 import mirkoabozzi.U5S7L2.dto.ReservationsUpdateDTO;
+import mirkoabozzi.U5S7L2.entities.Employee;
 import mirkoabozzi.U5S7L2.entities.Reservation;
 import mirkoabozzi.U5S7L2.exceptions.BadRequestException;
 import mirkoabozzi.U5S7L2.services.ReservationsService;
@@ -9,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -68,5 +71,11 @@ public class ReservationsController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         this.reservationsService.delete(id);
+    }
+
+    // GET RESERVATIONS BY EMPLOYEE
+    @GetMapping("/me")
+    public List<Reservation> getReservationsByEmployee(@AuthenticationPrincipal Employee authenticatedEmployee) {
+        return this.reservationsService.findReservationByEmployee(authenticatedEmployee);
     }
 }
