@@ -8,6 +8,7 @@ import mirkoabozzi.U5S7L2.services.ReservationsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,8 @@ public class ReservationsController {
 
     //POST RESERVATION
     @PostMapping
-    private Reservation saveReservation(@RequestBody @Validated ReservationsDTO payload, BindingResult validation) {
+    @PreAuthorize("hasAnyAuthority('ADMIN','EMPLOYEE')")
+    public Reservation saveReservation(@RequestBody @Validated ReservationsDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             String msg = validation.getAllErrors().stream().map(error -> error.getDefaultMessage()).collect(Collectors.joining(" ."));
             throw new BadRequestException("Payload error: " + msg);
@@ -34,21 +36,24 @@ public class ReservationsController {
 
     //GET
     @GetMapping
-    private Page<Reservation> getReservations(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "10") int size,
-                                              @RequestParam(defaultValue = "date") String sortBy) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public Page<Reservation> getReservations(@RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "10") int size,
+                                             @RequestParam(defaultValue = "requestDate") String sortBy) {
         return this.reservationsService.findAll(page, size, sortBy);
     }
 
     //GET BY ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','EMPLOYEE')")
     public Reservation findById(@PathVariable UUID id) {
         return reservationsService.findById(id);
     }
 
     //PUT
     @PutMapping("/{id}")
-    private Reservation update(@PathVariable UUID id, @RequestBody @Validated ReservationsUpdateDTO payload, BindingResult validation) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public Reservation update(@PathVariable UUID id, @RequestBody @Validated ReservationsUpdateDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             String msg = validation.getAllErrors().stream().map(error -> error.getDefaultMessage()).collect(Collectors.joining());
             throw new BadRequestException("Payload Error: " + msg);
@@ -59,6 +64,7 @@ public class ReservationsController {
 
     //DELETE
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','EMPLOYEE')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         this.reservationsService.delete(id);
