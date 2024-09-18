@@ -38,6 +38,7 @@ public class ReservationsService {
         if (reservationsRepository.existsByEmployeeAndTripDate(employeeFound, tripFound.getDate()))
             throw new BadRequestException("You already have a reservation for this day: " + tripFound.getDate());
         Reservation reservation = new Reservation(payload.note(), employeeFound, tripFound);
+        Reservation saved = this.reservationsRepository.save(reservation);
 
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(employeeFound.getEmail());
@@ -45,7 +46,7 @@ public class ReservationsService {
         msg.setText("Hi " + employeeFound.getName() + " " + employeeFound.getSurname() + " your reservation for " + tripFound.getDestination() + " on " + tripFound.getDate() + " is confirmed!");
         javaMailSender.send(msg);
 
-        return this.reservationsRepository.save(reservation);
+        return saved;
     }
 
     //GET

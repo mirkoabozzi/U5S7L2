@@ -38,6 +38,7 @@ public class EmployeesService {
         if (employeesRepository.existsByEmail(payload.email()))
             throw new BadRequestException("Email " + payload.email() + " already on DB");
         Employee newEmployee = new Employee(payload.username(), payload.name(), payload.surname(), payload.email(), "https://ui-avatars.com/api/?name=" + payload.name() + "+" + payload.surname(), this.passwordEncoder.encode(payload.password()));
+        Employee saved = this.employeesRepository.save(newEmployee);
 
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(payload.email());
@@ -45,7 +46,7 @@ public class EmployeesService {
         msg.setText("Hi " + payload.name() + " " + payload.surname() + " this mail was sent from JAVA, thanks for joining us!");
         javaMailSender.send(msg);
 
-        return this.employeesRepository.save(newEmployee);
+        return saved;
     }
 
     //GET
